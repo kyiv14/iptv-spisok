@@ -4,17 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Плейлист 4030 каналов</title>
+  <link rel="icon" href="https://iptv-spisok.vercel.app/icon-spisok.png" type="image/png">
   <style>
     body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f2f4f7;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background-color: #F2F2F7;
       color: #0a0a0a;
     }
 
     header {
       padding: 1rem;
-      background: #007aff;
+      background: #007AFF;
       color: white;
       text-align: center;
       font-size: 1.5rem;
@@ -22,6 +23,7 @@
 
     .search-container {
       padding: 1rem;
+      padding-bottom: 0;
       background: white;
       position: sticky;
       top: 0;
@@ -30,7 +32,8 @@
     }
 
     .search-input {
-      width: 100%;
+      width: calc(100% - 2rem);
+      margin: 0 1rem 1rem 1rem;
       padding: 0.75rem;
       border: 1px solid #ddd;
       border-radius: 8px;
@@ -46,28 +49,64 @@
     }
 
     .category {
-      background-color: white;
-      border-radius: 16px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      padding: 1rem;
+      background-color: #007AFF;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 0.75rem;
       text-align: center;
-      font-weight: 600;
       cursor: pointer;
       transition: transform 0.2s;
-      height: 100px;
+      height: 60px;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      font-size: 1.2rem; /* Уменьшено на 40% (было 2rem) */
+      font-size: 1.2rem;
       color: white;
       word-break: break-word;
       overflow: hidden;
-      text-transform: uppercase; /* Все буквы заглавные */
+      text-transform: uppercase;
+      border: 0.5px solid rgba(0,0,0,0.1);
+    }
+
+    .category-name {
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+
+    .category-count {
+      font-size: 0.9rem;
+      opacity: 0.9;
     }
 
     .category:hover {
       transform: translateY(-2px);
-      opacity: 0.9;
+      background-color: #0066CC;
+    }
+
+    .channel-result {
+      padding: 1rem;
+      margin: 0.5rem 1rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.3rem;
+    }
+
+    .channel-result:hover {
+      background-color: #f5f5f5;
+    }
+
+    .channel-category {
+      font-size: 0.8rem;
+      color: white;
+      background: #007AFF;
+      padding: 0.25rem 0.5rem;
+      border-radius: 12px;
     }
 
     .modal {
@@ -93,6 +132,7 @@
 
     .modal h2 {
       margin-top: 0;
+      color: #007AFF;
     }
 
     .modal-search {
@@ -140,6 +180,7 @@
     <input type="text" class="search-input" id="main-search" placeholder="Поиск по всем каналам...">
   </div>
   <div class="categories" id="categories"></div>
+  <div id="search-results"></div>
 
   <div class="modal" id="modal">
     <div class="modal-content">
@@ -153,6 +194,7 @@
   <script>
     const url = "https://moe-iptv.vercel.app/moe.m3u";
     const categoriesEl = document.getElementById('categories');
+    const searchResultsEl = document.getElementById('search-results');
     const modal = document.getElementById('modal');
     const modalTitle = document.getElementById('modal-title');
     const channelList = document.getElementById('channel-list');
@@ -165,15 +207,6 @@
 
     function closeModal() {
       modal.style.display = 'none';
-    }
-
-    function hashColor(str) {
-      let hash = 0;
-      for (let i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-      }
-      const hue = hash % 360;
-      return `hsl(${hue}, 70%, 55%)`;
     }
 
     async function fetchAndParseM3U() {
@@ -217,13 +250,24 @@
 
     function renderCategories() {
       categoriesEl.innerHTML = '';
+      searchResultsEl.innerHTML = '';
+      categoriesEl.style.display = 'grid';
       
       allCategories.forEach(group => {
         const count = dataByGroup[group].length;
         const el = document.createElement('div');
         el.className = 'category';
-        el.textContent = `${group} (${count})`.toUpperCase(); // Приводим к верхнему регистру
-        el.style.backgroundColor = hashColor(group);
+        
+        const nameEl = document.createElement('div');
+        nameEl.className = 'category-name';
+        nameEl.textContent = group.toUpperCase();
+        
+        const countEl = document.createElement('div');
+        countEl.className = 'category-count';
+        countEl.textContent = `${count} каналов`;
+        
+        el.appendChild(nameEl);
+        el.appendChild(countEl);
         el.onclick = () => openModal(group);
         categoriesEl.appendChild(el);
       });
@@ -252,7 +296,6 @@
       modalSearch.value = '';
     }
 
-    // Поиск по всем каналам
     mainSearch.oninput = function() {
       const searchTerm = this.value.toLowerCase();
       
@@ -261,29 +304,46 @@
         return;
       }
       
-      // Создаем временный объект для группировки найденных каналов
-      const foundGroups = {};
+      categoriesEl.style.display = 'none';
+      searchResultsEl.innerHTML = '';
       
-      allChannels.forEach(channel => {
-        if (channel.title.toLowerCase().includes(searchTerm)) {
-          if (!foundGroups[channel.group]) {
-            foundGroups[channel.group] = [];
-          }
-          foundGroups[channel.group].push(channel);
-        }
-      });
+      const foundChannels = allChannels.filter(channel => 
+        channel.title.toLowerCase().includes(searchTerm)
+      );
       
-      // Очищаем и отображаем только категории с найденными каналами
-      categoriesEl.innerHTML = '';
+      if (foundChannels.length === 0) {
+        searchResultsEl.innerHTML = '<div style="padding: 1rem; text-align: center;">Каналы не найдены</div>';
+        return;
+      }
       
-      Object.keys(foundGroups).forEach(group => {
-        const count = foundGroups[group].length;
+      foundChannels.forEach(channel => {
         const el = document.createElement('div');
-        el.className = 'category';
-        el.textContent = `${group} (${count})`.toUpperCase(); // Приводим к верхнему регистру
-        el.style.backgroundColor = hashColor(group);
-        el.onclick = () => openModal(group);
-        categoriesEl.appendChild(el);
+        el.className = 'channel-result';
+        
+        const titleEl = document.createElement('div');
+        titleEl.textContent = channel.title;
+        
+        const categoryEl = document.createElement('div');
+        categoryEl.className = 'channel-category';
+        categoryEl.textContent = channel.group;
+        
+        el.appendChild(titleEl);
+        el.appendChild(categoryEl);
+        
+        el.onclick = () => {
+          openModal(channel.group);
+          setTimeout(() => {
+            const modalChannels = channelList.querySelectorAll('.channel');
+            modalChannels.forEach(ch => {
+              if (ch.textContent === channel.title) {
+                ch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                ch.style.background = '#e6f2ff';
+                setTimeout(() => ch.style.background = '', 2000);
+              }
+            });
+          }, 100);
+        };
+        searchResultsEl.appendChild(el);
       });
     };
 
