@@ -9,7 +9,8 @@
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background-color: #F2F2F7;
+      /* Фон всего экрана белый */
+      background-color: white; 
       color: #0a0a0a;
     }
 
@@ -36,19 +37,19 @@
       font-size: 2rem;
       /* Делаем шрифт жирным */
       font-weight: bold;
-      /* Добавляем тень для выделения белого контейнера */
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      /* Тень удалена */
     }
 
     /* Удален .search-container */
 
     .search-input {
-      /* Ширина уменьшена на 30% (70%) и центрирование */
-      width: 70%; 
+      /* Ширина уменьшена в 2 раза (70% -> 35%) и центрирование */
+      width: 35%; 
       /* Отступ сверху увеличен до 2rem */
       margin: 2rem auto 1rem auto;
       padding: 0.75rem;
-      border: 1px solid #ddd;
+      /* Синий бордюр толщиной 2px */
+      border: 2px solid #007AFF; 
       border-radius: 8px;
       font-size: 1rem;
       outline: none;
@@ -110,7 +111,9 @@
 
     .channel-result {
       padding: 1rem;
-      margin: 0.5rem 1rem;
+      /* ИЗМЕНЕНИЕ: Уменьшение ширины до 50% и центрирование */
+      width: 50%;
+      margin: 0.5rem auto;
       background: white;
       border-radius: 8px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
@@ -250,8 +253,8 @@
         font-weight: bold; 
       }
       .search-input {
-        /* На мобильных: Отступ сверху увеличен до 2rem, сохраняем ширину 70% и центрирование */
-        width: 70%;
+        /* На мобильных: Отступ сверху увеличен до 2rem. Ширина 70% была сохранена для мобильных в оригинале, теперь она 35% */
+        width: 35%;
         margin: 2rem auto 1rem auto;
       }
       .modal-content {
@@ -276,6 +279,13 @@
         grid-template-columns: repeat(2, 1fr); 
         /* Измененный padding для мобильных */
         padding: 1rem;
+      }
+      
+      /* Добавляем медиа-запрос для channel-result на мобильных */
+      .channel-result {
+          /* Принудительная полная ширина на мобильных, чтобы сохранить читаемость, иначе они будут слишком узкими */
+          width: 95%; 
+          margin: 0.5rem auto;
       }
     }
   </style>
