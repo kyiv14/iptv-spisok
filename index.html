@@ -18,34 +18,30 @@
       background: #007AFF;
       color: white;
       text-align: center;
-      font-size: 1.5rem;
+      font-size: 1.8rem;
     }
 
-    .search-container {
-      padding: 1rem;
-      padding-bottom: 0;
-      background: white;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
+    /* Удален .search-container */
 
     .search-input {
-      width: calc(100% - 2rem);
-      margin: 0 1rem 1rem 1rem;
+      /* ИЗМЕНЕНИЕ: Ширина уменьшена на 30% (было 100% - 2rem, стало 70%) и центрирование */
+      width: 70%; 
+      margin: 1rem auto 1rem auto; /* Центрирование */
       padding: 0.75rem;
       border: 1px solid #ddd;
       border-radius: 8px;
       font-size: 1rem;
       outline: none;
+      display: block; /* Важно для работы margin: auto */
+      box-sizing: border-box; /* Для включения padding и border в общую ширину 70% */
     }
 
     .categories {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      /* Оставлено 3 столбца для уменьшения ширины элементов */
+      grid-template-columns: repeat(3, 1fr); 
       gap: 1rem;
       padding: 1rem;
+      display: grid;
     }
 
     .category {
@@ -56,7 +52,7 @@
       text-align: center;
       cursor: pointer;
       transition: transform 0.2s;
-      height: 60px;
+      height: 60px; /* Возвращено к 60px */
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -124,46 +120,58 @@
       max-width: 90%;
       width: 500px;
       max-height: 80vh;
-      overflow-y: auto;
       border-radius: 12px;
       padding: 1rem;
       position: relative;
+      display: flex;
+      flex-direction: column;
     }
 
     .modal h2 {
       margin-top: 0;
       color: #007AFF;
       text-transform: uppercase;
-      text-align: center; /* Центрирование заголовка */
-      padding: 0 40px; /* Добавлены отступы для кнопки закрытия */
+      text-align: center;
+      padding: 0 40px; 
+      padding-top: 20px;
     }
 
     .modal-search {
-      width: 100%;
+      /* Ширина уменьшена на 40% (60%) и центрирование */
+      width: 60%; 
       padding: 0.75rem;
-      margin-bottom: 1rem;
+      margin: 0 auto 1rem auto; 
       border: 1px solid #ddd;
       border-radius: 8px;
       font-size: 1rem;
       outline: none;
+      box-sizing: border-box; 
+    }
+    
+    #channel-list {
+      overflow-y: auto; 
+      flex-grow: 1; 
+      padding-right: 0.5rem;
     }
 
     .close-btn {
-      position: fixed;
-      right: 1.5rem;
-      top: 1.5rem;
+      position: absolute; 
+      left: 1rem;
+      top: 1rem;
       cursor: pointer;
-      font-size: 1.53rem; /* Уменьшен на 15% (было 1.8rem) */
+      font-size: 1.53rem; 
       color: white;
       background: #007AFF;
-      width: 38.25px; /* Уменьшен на 15% (было 45px) */
-      height: 38.25px; /* Уменьшен на 15% (было 45px) */
+      width: 38.25px; 
+      height: 38.25px; 
       border-radius: 50%;
       display: flex;
       justify-content: center;
       align-items: center;
       z-index: 1000;
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      text-align: center;
+      line-height: 38.25px; 
     }
 
     .channel {
@@ -179,25 +187,38 @@
     }
 
     @media (max-width: 600px) {
+      .search-input {
+        /* На мобильных сохраняем ширину 70% и центрирование */
+        width: 70%;
+        margin: 1rem auto 1rem auto;
+      }
       .modal-content {
         width: 95%;
         padding: 1rem;
       }
+      .modal-search {
+        /* Сохраняем ширину 60% и центрирование на мобильных */
+        width: 60%;
+        margin: 0 auto 1rem auto;
+      }
       .close-btn {
-        right: 1rem;
+        left: 1rem;
         top: 1rem;
-        width: 34px; /* Уменьшен пропорционально */
-        height: 34px; /* Уменьшен пропорционально */
-        font-size: 1.36rem; /* Уменьшен пропорционально */
+        width: 34px; 
+        height: 34px; 
+        font-size: 1.36rem; 
+        line-height: 34px;
+      }
+      .categories {
+        grid-template-columns: repeat(2, 1fr); 
       }
     }
   </style>
 </head>
 <body>
   <header>Плейлист 4030 каналов</header>
-  <div class="search-container">
-    <input type="text" class="search-input" id="main-search" placeholder="Поиск по всем каналам...">
-  </div>
+  <input type="text" class="search-input" id="main-search" placeholder="Поиск по всем каналам...">
+  
   <div class="categories" id="categories"></div>
   <div id="search-results"></div>
 
