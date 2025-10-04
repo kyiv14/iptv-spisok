@@ -13,71 +13,99 @@
       color: #0a0a0a;
     }
 
+    /* Анимация появления модального окна */
+    @keyframes modal-fadein {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
     header {
       padding: 1rem;
-      background: #007AFF;
-      color: white;
+      /* Фон контейнера белый */
+      background: white;
+      /* Цвет текста синий */
+      color: #007AFF;
       text-align: center;
-      font-size: 1.8rem;
+      /* Размер шрифта установлен на 2rem */
+      font-size: 2rem;
+      /* Делаем шрифт жирным */
+      font-weight: bold;
+      /* Добавляем тень для выделения белого контейнера */
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     /* Удален .search-container */
 
     .search-input {
-      /* ИЗМЕНЕНИЕ: Ширина уменьшена на 30% (было 100% - 2rem, стало 70%) и центрирование */
+      /* Ширина уменьшена на 30% (70%) и центрирование */
       width: 70%; 
-      margin: 1rem auto 1rem auto; /* Центрирование */
+      /* Отступ сверху увеличен до 2rem */
+      margin: 2rem auto 1rem auto;
       padding: 0.75rem;
       border: 1px solid #ddd;
       border-radius: 8px;
       font-size: 1rem;
       outline: none;
-      display: block; /* Важно для работы margin: auto */
-      box-sizing: border-box; /* Для включения padding и border в общую ширину 70% */
+      display: block;
+      box-sizing: border-box;
     }
 
     .categories {
-      /* Оставлено 3 столбца для уменьшения ширины элементов */
-      grid-template-columns: repeat(3, 1fr); 
+      /* Теперь 4 столбца (категории по 4 в ряд) */
+      grid-template-columns: repeat(4, 1fr); 
       gap: 1rem;
-      padding: 1rem;
+      /* padding установлен: 1rem (сверху/снизу) 8rem (слева/справа) */
+      padding: 1rem 8rem; 
       display: grid;
     }
 
     .category {
-      background-color: #007AFF;
+      /* Цвет плитки белый */
+      background-color: white; 
       border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      /* Добавлена более выраженная тень */
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
       padding: 0.75rem;
       text-align: center;
       cursor: pointer;
-      transition: transform 0.2s;
-      height: 60px; /* Возвращено к 60px */
+      transition: transform 0.2s, box-shadow 0.2s; /* Добавлен переход для тени */
+      /* Высота увеличена на 30% (60px * 1.3 = 78px) */
+      height: 78px; 
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       font-size: 1.2rem;
-      color: white;
       word-break: break-word;
       overflow: hidden;
       text-transform: uppercase;
-      border: 0.5px solid rgba(0,0,0,0.1);
+      border: 0.5px solid #ddd; /* Изменен цвет рамки для белого фона */
     }
 
     .category-name {
       font-weight: bold;
       margin-bottom: 2px;
+      /* Цвет названия категории синий */
+      color: #007AFF; 
     }
 
     .category-count {
       font-size: 0.9rem;
-      opacity: 0.9;
+      /* Цвет количества каналов черный */
+      color: #0a0a0a; 
+      opacity: 1; /* Возвращаем полную непрозрачность для черного цвета */
     }
 
     .category:hover {
       transform: translateY(-2px);
-      background-color: #0066CC;
+      background-color: #F9F9F9; /* Светлый фон при наведении */
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* Усиленная тень при наведении */
     }
 
     .channel-result {
@@ -113,6 +141,16 @@
       justify-content: center;
       align-items: center;
       z-index: 999;
+      /* Начнем с 0 прозрачности для плавного появления */
+      opacity: 0; 
+      /* Принудительное использование 'none' для быстрого скрытия после анимации */
+      transition: opacity 0.3s ease-out;
+    }
+    
+    /* Класс для отображения модального окна и запуска анимации */
+    .modal.is-active {
+        opacity: 1;
+        display: flex;
     }
 
     .modal-content {
@@ -125,6 +163,18 @@
       position: relative;
       display: flex;
       flex-direction: column;
+
+      /* Начальное состояние для анимации контента (за пределами is-active) */
+      opacity: 0;
+      transform: translateY(20px);
+      /* Настройка анимации: 0.3s плавное скольжение и появление */
+      transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+    }
+    
+    /* Активируем анимацию, когда модалка активна */
+    .modal.is-active .modal-content {
+        opacity: 1;
+        transform: translateY(0);
     }
 
     .modal h2 {
@@ -172,6 +222,13 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
       text-align: center;
       line-height: 38.25px; 
+      /* Добавляем плавный переход для цвета */
+      transition: background-color 0.2s ease;
+    }
+    
+    /* Стиль при наведении - кружок становится красным */
+    .close-btn:hover {
+        background-color: #FF3B30; /* Яркий красный цвет */
     }
 
     .channel {
@@ -187,10 +244,15 @@
     }
 
     @media (max-width: 600px) {
+      /* Уменьшаем заголовок на мобильных, чтобы он поместился */
+      header {
+        font-size: 2rem; 
+        font-weight: bold; 
+      }
       .search-input {
-        /* На мобильных сохраняем ширину 70% и центрирование */
+        /* На мобильных: Отступ сверху увеличен до 2rem, сохраняем ширину 70% и центрирование */
         width: 70%;
-        margin: 1rem auto 1rem auto;
+        margin: 2rem auto 1rem auto;
       }
       .modal-content {
         width: 95%;
@@ -210,7 +272,10 @@
         line-height: 34px;
       }
       .categories {
+        /* Оставлено 2 столбца для мобильных устройств, чтобы сохранить читаемость */
         grid-template-columns: repeat(2, 1fr); 
+        /* Измененный padding для мобильных */
+        padding: 1rem;
       }
     }
   </style>
@@ -246,7 +311,12 @@
     let allCategories = [];
 
     function closeModal() {
-      modal.style.display = 'none';
+      // Плавное скрытие модалки
+      modal.classList.remove('is-active');
+      // Ожидаем завершения анимации (300ms) перед скрытием
+      setTimeout(() => {
+        modal.style.display = 'none';
+      }, 300);
     }
 
     async function fetchAndParseM3U() {
@@ -323,7 +393,10 @@
         ch.dataset.title = channel.title.toLowerCase();
         channelList.appendChild(ch);
       });
+      
+      // Открытие модалки
       modal.style.display = 'flex';
+      modal.classList.add('is-active'); // Немедленно запускаем анимацию
       
       modalSearch.oninput = function() {
         const searchTerm = this.value.toLowerCase();
@@ -388,6 +461,7 @@
     };
 
     window.onclick = function(e) {
+      // Обработка закрытия при клике вне модального окна
       if (e.target === modal) closeModal();
     };
 
