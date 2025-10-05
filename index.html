@@ -194,7 +194,8 @@
       width: 60%; 
       padding: 0.75rem;
       margin: 0 auto 1rem auto; 
-      border: 1px solid #ddd;
+      /* ИЗМЕНЕНИЕ: Синий бордюр для ПК версии */
+      border: 1px solid #007AFF;
       border-radius: 8px;
       font-size: 1rem;
       outline: none;
@@ -253,7 +254,7 @@
         font-weight: bold; 
       }
       .search-input {
-        /* ИЗМЕНЕНИЕ: Ширина увеличена с 35% на 70% */
+        /* Ширина 70% от предыдущего изменения */
         width: 70%;
         margin: 2rem auto 1rem auto;
       }
@@ -262,9 +263,10 @@
         padding: 1rem;
       }
       .modal-search {
-        /* Сохраняем ширину 60% и центрирование на мобильных */
-        width: 60%;
+        /* Ширина 78% и синий бордюр для мобильной версии */
+        width: 78%;
         margin: 0 auto 1rem auto;
+        border: 1px solid #007AFF; 
       }
       .close-btn {
         left: 1rem;
@@ -284,7 +286,7 @@
       /* Добавляем медиа-запрос для channel-result на мобильных */
       .channel-result {
           /* Принудительная полная ширина на мобильных, чтобы сохранить читаемость, иначе они будут слишком узкими */
-          width: 95%; 
+          width: 75%; 
           margin: 0.5rem auto;
       }
     }
