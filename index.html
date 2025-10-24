@@ -3,18 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Плейлист 4030 каналов</title>
+  <title>Плейлист каналов</title>
   <link rel="icon" href="https://iptv-spisok.vercel.app/icon-spisok.png" type="image/png">
   <style>
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      /* Фон всего экрана белый */
       background-color: white; 
       color: #0a0a0a;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
-    /* Анимация появления модального окна */
     @keyframes modal-fadein {
       from {
         opacity: 0;
@@ -28,27 +29,43 @@
 
     header {
       padding: 1rem;
-      /* Фон контейнера белый */
       background: white;
-      /* Цвет текста синий */
       color: #007AFF;
       text-align: center;
-      /* Размер шрифта установлен на 2rem */
       font-size: 2rem;
-      /* Делаем шрифт жирным */
       font-weight: bold;
-      /* Тень удалена */
+    }
+    
+    #loading-indicator {
+        text-align: center;
+        padding: 2rem;
+        font-size: 1.2rem;
+        color: #007AFF;
+        display: none;
+        flex-grow: 1;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .loading-spinner {
+        border: 4px solid rgba(0, 122, 255, 0.1);
+        border-top: 4px solid #007AFF;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin-bottom: 10px;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 
-    /* Удален .search-container */
-
     .search-input {
-      /* Ширина уменьшена в 2 раза (70% -> 35%) и центрирование */
       width: 35%; 
-      /* Отступ сверху увеличен до 2rem */
       margin: 2rem auto 1rem auto;
       padding: 0.75rem;
-      /* Синий бордюр толщиной 2px */
       border: 2px solid #007AFF; 
       border-radius: 8px;
       font-size: 1rem;
@@ -58,25 +75,20 @@
     }
 
     .categories {
-      /* Теперь 4 столбца (категории по 4 в ряд) */
       grid-template-columns: repeat(4, 1fr); 
       gap: 1rem;
-      /* padding установлен: 1rem (сверху/снизу) 8rem (слева/справа) */
       padding: 1rem 8rem; 
       display: grid;
     }
 
     .category {
-      /* Цвет плитки белый */
       background-color: white; 
       border-radius: 12px;
-      /* Добавлена более выраженная тень */
       box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
       padding: 0.75rem;
       text-align: center;
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s; /* Добавлен переход для тени */
-      /* Высота увеличена на 30% (60px * 1.3 = 78px) */
+      transition: transform 0.2s, box-shadow 0.2s; 
       height: 78px; 
       display: flex;
       flex-direction: column;
@@ -86,32 +98,29 @@
       word-break: break-word;
       overflow: hidden;
       text-transform: uppercase;
-      border: 0.5px solid #ddd; /* Изменен цвет рамки для белого фона */
+      border: 0.5px solid #ddd; 
     }
 
     .category-name {
       font-weight: bold;
       margin-bottom: 2px;
-      /* Цвет названия категории синий */
       color: #007AFF; 
     }
 
     .category-count {
       font-size: 0.9rem;
-      /* Цвет количества каналов черный */
       color: #0a0a0a; 
-      opacity: 1; /* Возвращаем полную непрозрачность для черного цвета */
+      opacity: 1;
     }
 
     .category:hover {
       transform: translateY(-2px);
-      background-color: #F9F9F9; /* Светлый фон при наведении */
-      box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* Усиленная тень при наведении */
+      background-color: #F9F9F9; 
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15); 
     }
 
     .channel-result {
       padding: 1rem;
-      /* ИЗМЕНЕНИЕ: Уменьшение ширины до 50% и центрирование */
       width: 50%;
       margin: 0.5rem auto;
       background: white;
@@ -144,13 +153,10 @@
       justify-content: center;
       align-items: center;
       z-index: 999;
-      /* Начнем с 0 прозрачности для плавного появления */
       opacity: 0; 
-      /* Принудительное использование 'none' для быстрого скрытия после анимации */
       transition: opacity 0.3s ease-out;
     }
     
-    /* Класс для отображения модального окна и запуска анимации */
     .modal.is-active {
         opacity: 1;
         display: flex;
@@ -167,14 +173,11 @@
       display: flex;
       flex-direction: column;
 
-      /* Начальное состояние для анимации контента (за пределами is-active) */
       opacity: 0;
       transform: translateY(20px);
-      /* Настройка анимации: 0.3s плавное скольжение и появление */
       transition: opacity 0.3s ease-out, transform 0.3s ease-out;
     }
     
-    /* Активируем анимацию, когда модалка активна */
     .modal.is-active .modal-content {
         opacity: 1;
         transform: translateY(0);
@@ -190,11 +193,9 @@
     }
 
     .modal-search {
-      /* Ширина уменьшена на 40% (60%) и центрирование */
       width: 60%; 
       padding: 0.75rem;
       margin: 0 auto 1rem auto; 
-      /* ИЗМЕНЕНИЕ: Синий бордюр для ПК версии */
       border: 1px solid #007AFF;
       border-radius: 8px;
       font-size: 1rem;
@@ -226,13 +227,11 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
       text-align: center;
       line-height: 38.25px; 
-      /* Добавляем плавный переход для цвета */
       transition: background-color 0.2s ease;
     }
     
-    /* Стиль при наведении - кружок становится красным */
     .close-btn:hover {
-        background-color: #FF3B30; /* Яркий красный цвет */
+        background-color: #FF3B30;
     }
 
     .channel {
@@ -240,21 +239,41 @@
       padding: 0.5rem;
       border-bottom: 1px solid #eee;
       cursor: pointer;
-      font-size: 1.5rem;
+      font-size: 1.1rem; /* Уменьшим размер шрифта для большого списка */
+      transition: background-color 0.1s;
     }
 
     .channel:hover {
       background-color: #f5f5f5;
     }
+    
+    #notification {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #007AFF;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s, visibility 0.3s;
+        z-index: 1000;
+    }
+    
+    #notification.show {
+        opacity: 1;
+        visibility: visible;
+    }
 
     @media (max-width: 600px) {
-      /* Уменьшаем заголовок на мобильных, чтобы он поместился */
       header {
         font-size: 2rem; 
         font-weight: bold; 
       }
       .search-input {
-        /* Ширина 70% от предыдущего изменения */
         width: 70%;
         margin: 2rem auto 1rem auto;
       }
@@ -263,7 +282,6 @@
         padding: 1rem;
       }
       .modal-search {
-        /* Ширина 78% и синий бордюр для мобильной версии */
         width: 78%;
         margin: 0 auto 1rem auto;
         border: 1px solid #007AFF; 
@@ -277,15 +295,11 @@
         line-height: 34px;
       }
       .categories {
-        /* Оставлено 2 столбца для мобильных устройств, чтобы сохранить читаемость */
         grid-template-columns: repeat(2, 1fr); 
-        /* Измененный padding для мобильных */
         padding: 1rem;
       }
       
-      /* Добавляем медиа-запрос для channel-result на мобильных */
       .channel-result {
-          /* Принудительная полная ширина на мобильных, чтобы сохранить читаемость, иначе они будут слишком узкими */
           width: 75%; 
           margin: 0.5rem auto;
       }
@@ -293,10 +307,15 @@
   </style>
 </head>
 <body>
-  <header>Плейлист 4030 каналов</header>
-  <input type="text" class="search-input" id="main-search" placeholder="Поиск по всем каналам...">
+  <header>Плейлист каналов</header>
+  <input type="text" class="search-input" id="main-search" placeholder="Поиск по всем каналам..." disabled>
   
-  <div class="categories" id="categories"></div>
+  <div id="loading-indicator">
+    <div class="loading-spinner"></div>
+    Загрузка и обработка плейлиста...
+  </div>
+  
+  <div class="categories" id="categories" style="display: none;"></div>
   <div id="search-results"></div>
 
   <div class="modal" id="modal">
@@ -308,8 +327,9 @@
     </div>
   </div>
 
+  <div id="notification"></div>
+
   <script>
-    const url = "https://moe-iptv.vercel.app/moe.m3u";
     const categoriesEl = document.getElementById('categories');
     const searchResultsEl = document.getElementById('search-results');
     const modal = document.getElementById('modal');
@@ -317,58 +337,120 @@
     const channelList = document.getElementById('channel-list');
     const mainSearch = document.getElementById('main-search');
     const modalSearch = document.getElementById('modal-search');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const notificationEl = document.getElementById('notification');
 
     let dataByGroup = {};
     let allChannels = [];
     let allCategories = [];
-
+    
+    // --- УТИЛИТА ДЛЯ УВЕДОМЛЕНИЙ ---
+    function showNotification(message) {
+        notificationEl.textContent = message;
+        notificationEl.classList.add('show');
+        setTimeout(() => {
+            notificationEl.classList.remove('show');
+        }, 3000);
+    }
+    
+    // --- УПРАВЛЕНИЕ МОДАЛЬНЫМ ОКНОМ ---
     function closeModal() {
-      // Плавное скрытие модалки
       modal.classList.remove('is-active');
-      // Ожидаем завершения анимации (300ms) перед скрытием
       setTimeout(() => {
         modal.style.display = 'none';
       }, 300);
     }
+    
+    // --- ФУНКЦИЯ ПАРСИНГА M3U (ИСПРАВЛЕННАЯ) ---
+    function parseM3U(text) {
+        const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+        let currentGroup = 'Без категории';
+        let channels = [];
+        let channelData = {};
 
-    async function fetchAndParseM3U() {
-      const res = await fetch(url);
-      const text = await res.text();
-      const lines = text.split('\n');
-      let currentInfo = '';
-      let currentGroup = 'Без категории';
-      let currentUrl = '';
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
 
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (line.startsWith('#EXTINF')) {
-          currentInfo = line;
-        } else if (line.startsWith('#EXTGRP')) {
-          currentGroup = line.replace('#EXTGRP:', '').trim();
-        } else if (line && !line.startsWith('#')) {
-          currentUrl = line;
-          const titleMatch = currentInfo.match(/,(.*)$/);
-          const title = titleMatch ? titleMatch[1] : 'Неизвестный канал';
-          
-          if (!dataByGroup[currentGroup]) {
-            dataByGroup[currentGroup] = [];
-          }
-          
-          const channelData = { 
-            title, 
-            group: currentGroup,
-            url: currentUrl 
-          };
-          
-          dataByGroup[currentGroup].push(channelData);
-          allChannels.push(channelData);
-          currentGroup = 'Без категории';
+            if (line.startsWith('#EXTGRP:')) {
+                // Если #EXTGRP: встречается отдельно, обновляем текущую группу
+                currentGroup = line.replace('#EXTGRP:', '').trim();
+            } else if (line.startsWith('#EXTINF')) {
+                // Если мы встречаем новый #EXTINF, то начинаем новый канал
+                
+                // 1. Извлекаем название канала (после последней запятой)
+                const titleMatch = line.match(/,(.*)$/);
+                const title = titleMatch ? titleMatch[1].trim() : 'Неизвестный канал';
+                
+                // 2. Извлекаем group-title (предпочтительно, если есть)
+                const groupTitleMatch = line.match(/group-title="([^"]*)"/);
+                const group = groupTitleMatch ? groupTitleMatch[1].trim() : currentGroup;
+
+                channelData = {
+                    title: title,
+                    group: group,
+                    url: '',
+                };
+            } else if (line.startsWith('http')) {
+                // 3. Это URL, завершаем запись канала, если перед ним был #EXTINF
+                if (channelData.title && !channelData.url) {
+                    channelData.url = line;
+                    channels.push({ ...channelData });
+                    // Сбрасываем данные для следующего канала
+                    channelData = {};
+                }
+            }
         }
-      }
 
-      allCategories = Object.keys(dataByGroup);
-      renderCategories();
+        let groupedData = {};
+        channels.forEach(channel => {
+            const groupKey = channel.group || 'Без категории';
+            if (!groupedData[groupKey]) {
+                groupedData[groupKey] = [];
+            }
+            groupedData[groupKey].push(channel);
+        });
+
+        return groupedData;
     }
+
+    // --- ФУНКЦИЯ ЗАГРУЗКИ ПЛЕЙЛИСТА (АСИНХРОННАЯ) ---
+    async function processM3UContent() {
+        // Показываем индикатор загрузки и отключаем поиск
+        loadingIndicator.style.display = 'flex';
+        mainSearch.disabled = true;
+        categoriesEl.style.display = 'none';
+        
+        const url = "https://moe-iptv.vercel.app/moe.m3u";
+        
+        try {
+            const res = await fetch(url);
+            if (!res.ok) {
+                throw new Error(`Ошибка HTTP: ${res.status}`);
+            }
+            const text = await res.text();
+            
+            dataByGroup = parseM3U(text);
+            
+            allChannels = Object.values(dataByGroup).flat();
+            allCategories = Object.keys(dataByGroup);
+            
+            renderCategories();
+            
+            // Обновляем заголовок с фактическим количеством каналов
+            document.querySelector('header').textContent = `Плейлист ${allChannels.length} каналов`;
+
+        } catch (error) {
+            console.error("Ошибка при загрузке плейлиста:", error);
+            document.querySelector('header').textContent = `Ошибка загрузки плейлиста`;
+            showNotification(`Ошибка: Не удалось загрузить плейлист. ${error.message}`);
+        } finally {
+            // Скрываем индикатор загрузки и включаем поиск
+            loadingIndicator.style.display = 'none';
+            mainSearch.disabled = false;
+            categoriesEl.style.display = 'grid';
+        }
+    }
+
 
     function renderCategories() {
       categoriesEl.innerHTML = '';
@@ -398,17 +480,29 @@
     function openModal(group) {
       modalTitle.textContent = group.toUpperCase();
       channelList.innerHTML = '';
-      dataByGroup[group].forEach(channel => {
+      const channelsInGroup = dataByGroup[group] || [];
+      
+      channelsInGroup.forEach(channel => {
         const ch = document.createElement('div');
         ch.className = 'channel';
         ch.textContent = channel.title;
         ch.dataset.title = channel.title.toLowerCase();
+        
+        // Обработчик для копирования URL канала
+        ch.onclick = () => {
+             navigator.clipboard.writeText(channel.url).then(() => {
+                showNotification(`URL канала "${channel.title}" скопирован!`);
+                console.log(`URL скопирован: ${channel.url}`);
+            }).catch(err => {
+                showNotification(`Не удалось скопировать URL. Проверьте консоль.`);
+                console.error('Не удалось скопировать текст: ', err);
+            });
+        };
         channelList.appendChild(ch);
       });
       
-      // Открытие модалки
       modal.style.display = 'flex';
-      modal.classList.add('is-active'); // Немедленно запускаем анимацию
+      modal.classList.add('is-active');
       
       modalSearch.oninput = function() {
         const searchTerm = this.value.toLowerCase();
@@ -456,11 +550,13 @@
         el.appendChild(categoryEl);
         
         el.onclick = () => {
+          // Открываем модальное окно и фокусируемся на канале
           openModal(channel.group);
           setTimeout(() => {
             const modalChannels = channelList.querySelectorAll('.channel');
             modalChannels.forEach(ch => {
               if (ch.textContent === channel.title) {
+                // Прокрутка и подсветка
                 ch.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 ch.style.background = '#e6f2ff';
                 setTimeout(() => ch.style.background = '', 2000);
@@ -473,11 +569,11 @@
     };
 
     window.onclick = function(e) {
-      // Обработка закрытия при клике вне модального окна
       if (e.target === modal) closeModal();
     };
 
-    fetchAndParseM3U();
+    // Запуск процесса загрузки плейлиста при старте
+    window.onload = processM3UContent; 
   </script>
 </body>
 </html>
